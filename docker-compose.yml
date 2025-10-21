@@ -1,22 +1,42 @@
-# Docker安装全模块
+# 声纹识别API Docker Compose配置
 
-version: '3'
+version: '3.8'
+
 services:
-  # MCP 接入点服务
   voiceprint-api:
-    image: ghcr.nju.edu.cn/xinnan-tech/voiceprint-api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: voiceprint-api:latest
     container_name: voiceprint-api
-    restart: always
-    networks:
-      - default
+    restart: unless-stopped
     ports:
       - "8005:8005"
-    security_opt:
-      - seccomp:unconfined
     environment:
       - TZ=Asia/Shanghai
+      - PYTHONUNBUFFERED=1
     volumes:
-      # 配置文件目录
+      # 数据持久化
       - ./data:/app/data
+      # 日志持久化（可选）
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8005/voiceprint/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - voiceprint-net
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
 networks:
-  default:
+  voiceprint-net:
+    driver: bridge

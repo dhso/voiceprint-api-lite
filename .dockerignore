@@ -1,0 +1,71 @@
+# Docker ignore file - 排除不需要的文件和目录
+
+# 数据和日志目录
+data/
+logs/
+*.log
+*.log.*
+
+# 开发工具配置
+.claude/
+.github/
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Python缓存
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# 虚拟环境
+venv/
+env/
+ENV/
+.venv/
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 测试文件
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# 文档和说明
+README.md
+CLAUDE.md
+LICENSE
+*.md
+
+# 脚本文件（容器内不需要）
+install.sh
+install.bat
+start.sh
+start.bat
+fix_pyarrow.sh
+
+# Docker相关
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# 其他
+*.bak
+*.backup
+*.orig

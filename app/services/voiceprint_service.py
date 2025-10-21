@@ -24,18 +24,14 @@ class VoiceprintService:
         self._warmup_model()  # 添加模型预热
 
     def _init_pipeline(self) -> None:
-        """初始化声纹识别模型"""
+        """初始化声纹识别模型（仅CPU模式）"""
         start_time = time.time()
         logger.start("初始化声纹识别模型")
 
         try:
-            # 检查CUDA可用性
-            if torch.cuda.is_available():
-                device = "gpu"
-                logger.info(f"使用GPU设备: {torch.cuda.get_device_name(0)}")
-            else:
-                device = "cpu"
-                logger.info("使用CPU设备")
+            # 强制使用CPU设备，减少CUDA依赖
+            device = "cpu"
+            logger.info("使用CPU设备运行模型")
 
             logger.info("开始加载模型: iic/speech_campplus_sv_zh-cn_3dspeaker_16k")
             self._pipeline = pipeline(
@@ -80,7 +76,6 @@ class VoiceprintService:
             for test_rate in test_rates:
                 with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpf:
                     # 生成测试采样率的音频
-                    test_samples = int(test_rate * duration)
                     test_audio_resampled = librosa.resample(
                         test_audio, orig_sr=sample_rate, target_sr=test_rate
                     )

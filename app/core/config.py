@@ -54,8 +54,13 @@ class Settings:
 
     @property
     def mysql(self) -> Dict[str, Any]:
-        """MySQL数据库配置"""
+        """MySQL数据库配置（保留用于兼容性）"""
         return self._config.get("mysql", {})
+
+    @property
+    def sqlite(self) -> Dict[str, Any]:
+        """SQLite数据库配置"""
+        return self._config.get("sqlite", {"database": "data/voiceprint.db"})
 
     @property
     def voiceprint(self) -> Dict[str, Any]:

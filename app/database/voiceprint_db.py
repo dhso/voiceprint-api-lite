@@ -23,10 +23,10 @@ class VoiceprintDB:
         """
         try:
             with db_connection.get_cursor() as cursor:
+                # SQLite使用 INSERT OR REPLACE 语法
                 sql = """
-                INSERT INTO voiceprints (speaker_id, feature_vector)
-                VALUES (%s, %s)
-                ON DUPLICATE KEY UPDATE feature_vector=VALUES(feature_vector)
+                INSERT OR REPLACE INTO voiceprints (speaker_id, feature_vector)
+                VALUES (?, ?)
                 """
                 cursor.execute(sql, (speaker_id, emb.tobytes()))
                 logger.success(f"声纹特征保存成功: {speaker_id}")
@@ -58,7 +58,8 @@ class VoiceprintDB:
         try:
             with db_connection.get_cursor() as cursor:
                 if speaker_ids:
-                    format_strings = ",".join(["%s"] * len(speaker_ids))
+                    # SQLite使用 ? 作为占位符
+                    format_strings = ",".join(["?"] * len(speaker_ids))
                     sql = f"SELECT speaker_id, feature_vector FROM voiceprints WHERE speaker_id IN ({format_strings})"
                     cursor.execute(sql, tuple(speaker_ids))
                 else:
@@ -102,7 +103,7 @@ class VoiceprintDB:
         """
         try:
             with db_connection.get_cursor() as cursor:
-                sql = "DELETE FROM voiceprints WHERE speaker_id = %s"
+                sql = "DELETE FROM voiceprints WHERE speaker_id = ?"
                 cursor.execute(sql, (speaker_id,))
                 if cursor.rowcount > 0:
                     logger.info(f"声纹特征删除成功: {speaker_id}")
